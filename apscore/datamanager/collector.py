@@ -28,6 +28,7 @@ def format_row(row: list) -> list:
     - Percentages become floats (Ex: '21.5%' --> 0.215)
     - Numbers become ints (Ex: '2020' --> 2020)
     - '-' becomes None
+    - Booleans stay booleans
     - Strings stay strings
 
     :param row: list to be converted
@@ -36,6 +37,10 @@ def format_row(row: list) -> list:
     """
     new_row = []
     for i in row:
+        if type(i) == bool:
+            new_row.append(i)
+            continue
+        i = i.strip()
         if i == '-':
             new_row.append(None)
         elif i[-1] == '%':
@@ -72,9 +77,11 @@ def get_exam_results(exam_id: Exams) -> dict:
     tbody = table.find('tbody')
     for row in tbody.find_all('tr'):
         row_data = []
+        major_revision = False
         for cell in row.find_all('td'):
-            value = cell.find('span').getText()
-            row_data.append(value)
-        row_data = format_row(row_data)
+            value = cell.find('span')
+            major_revision = 'class' in value.attrs and 'text-orange' in value.attrs['class']
+            row_data.append(value.getText())
+        row_data = format_row(row_data + [major_revision])
         data[row_data[0]] = row_data
     return data
