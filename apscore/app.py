@@ -1,4 +1,4 @@
-from apscore.data import collector
+from apscore.datamanager import collector
 
 
 def run():
