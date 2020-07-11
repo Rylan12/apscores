@@ -30,7 +30,16 @@ def write_data_to_json_file(data: dict, filename: str) -> None:
     :rtype: None
     """
     with open(filename, 'w') as f:
-        json.dump(data, f)
+        json_data = {'data': {}, 'major_revisions': []}
+        for year in data:
+            row = data[year]
+            if row[-1]:
+                json_data['major_revisions'].append(year)
+            # Format into [1%, 2%, 3%, 4%, 5%, 3+%]
+            row = row[5:0:-1] + row[7:8]
+            json_data['data'][year] = row
+
+        json.dump(json_data, f)
 
 
 def write_all_data_to_csv_directory(data: dict, directory: str) -> None:
@@ -84,6 +93,7 @@ def write_all_data_to_directory(data: dict, directory: str) -> None:
     :param directory: the directory to write the files to
     :rtype: None
     """
+    os.makedirs(directory, exist_ok=True)
     write_exam_list(data, os.path.join(directory, 'exams.json'))
     write_all_data_to_csv_directory(data, os.path.join(directory, 'csv'))
     write_all_data_to_json_directory(data, os.path.join(directory, 'json'))
