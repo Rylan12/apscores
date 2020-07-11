@@ -3,18 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <title>AP Exam Score Distribution Visualizer</title>
-    <link rel="stylesheet" href="style.css">
+    <style>body {
+        font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }</style>
 </head>
 <body>
-<label for="examSelector">Choose Exam:</label><select id="examSelector">
+<label for="examSelector">Choose Exam:</label><select id="examSelector" style="margin-left: 1em; margin-right: 1em;">
     <option>Choose Exam</option>
 </select>
-<label for="chartTypeSelector">Chart Type:</label><select id="chartTypeSelector">
+<label for="chartTypeSelector">Chart Type:</label><select id="chartTypeSelector"
+                                                          style="margin-left: 1em; margin-right: 1em;">
     <option value="line">Line</option>
     <option value="stacked-line">Stacked Line</option>
     <option value="stacked-bar">Stacked Bar</option>
 </select>
-<div>
+<div style="position: relative; height: 40vh; width: 80vw;">
     <canvas id="chart" width="1200" height="800"></canvas>
 </div>
 
