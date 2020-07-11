@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>AP Exam Score Distribution Visualizer</title>
-    <style>body {
-        font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    }</style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <label for="examSelector">Choose Exam:</label><select id="examSelector">
@@ -16,7 +14,9 @@
     <option value="stacked-line">Stacked Line</option>
     <option value="stacked-bar">Stacked Bar</option>
 </select>
-<canvas id="chart" width="1200" height="800"></canvas>
+<div>
+    <canvas id="chart" width="1200" height="800"></canvas>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
 <script src="script.js"></script>
