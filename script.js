@@ -64,7 +64,8 @@ function renderChart(exam) {
                             beginAtZero: true
                         }
                     }]
-                }
+                },
+                responsive: false
             }
         });
     });
