@@ -1,5 +1,5 @@
 function renderChart(exam) {
-    $.getJSON('data/json/' + exam + '.json', function (data) {
+    fetch(`data/json/${exam}.json`).then(response => response.json()).then(data => {
         let years = [];
         let datasets = [
             {
@@ -42,12 +42,12 @@ function renderChart(exam) {
         ];
 
         for (let year in data) {
-            years.push(data[year][0])
+            years.push(data[year][0]);
             for (let i = 1; i <= 5; i++) {
-                datasets[i - 1].data.push(data[year][i])
+                datasets[i - 1].data.push(data[year][i]);
             }
 
-            datasets[5].data.push(data[year][7])
+            datasets[5].data.push(data[year][7]);
         }
 
         let ctx = document.getElementById('chart').getContext('2d');
@@ -71,17 +71,22 @@ function renderChart(exam) {
     });
 }
 
-$(document).ready(function() {
-    $.getJSON('data/exams.json', function (data) {
-        let examSelector = $('#examSelector')
-        data.forEach(function (exam) {
-            let examOption = $(`<option value="${exam}">${exam}</option>`)
-            examSelector.append(examOption)
-        })
-    })
+window.addEventListener('load', () => {
+    fetch('data/exams.json').then(response => response.json()).then(data => {
+        let examSelector = document.querySelector('#examSelector');
+        data.forEach(exam => {
+            let examNameRegex = /_([A-Z])([A-Z]+)/g;
+            let examName = exam
+                .replaceAll(examNameRegex, (_, capital, lower) => ` ${capital}${lower.toLowerCase()}`)
+                .replaceAll(/ US /ig, ' US ');
+            let examOption = document.createElement('option');
+            examOption.value = exam;
+            examOption.text = examName;
+            examSelector.append(examOption);
+        });
+    });
 
-    $('#examSelector').change(function () {
-        let selectedExam = $(this).children('option:selected').val();
-        renderChart(selectedExam)
-    })
+    document.querySelector('#examSelector').onchange = function () {
+        renderChart(this.options[this.selectedIndex].value);
+    };
 });
