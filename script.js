@@ -75,10 +75,10 @@ window.addEventListener('load', () => {
     fetch('data/exams.json').then(response => response.json()).then(data => {
         let examSelector = document.querySelector('#examSelector');
         data.forEach(exam => {
-            let examNameRegex = /_([A-Z])([A-Z]+)/g;
+            let examNameRegex = /_([^_])([^_]*)/g;
             let examName = exam
                 .replaceAll(examNameRegex, (_, capital, lower) => ` ${capital}${lower.toLowerCase()}`)
-                .replaceAll(/ US /ig, ' US ');
+                .replaceAll(/ (\w{2})(?: |$)/ig, (word) => ` ${word.toUpperCase()} `);
             let examOption = document.createElement('option');
             examOption.value = exam;
             examOption.text = examName;
