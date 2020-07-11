@@ -54,19 +54,19 @@ def format_row(row: list) -> list:
     return new_row
 
 
-def get_exam_results(exam_id: Exams) -> dict:
+def get_exam_results(exam: Exams) -> dict:
     """Get results for a specific exam.
 
     Scrape the totalregistration.net website for exam results for a given exam. The `exam_id` refers to the id used by
     Total Registration to categorize their exams.
 
-    :param exam_id: id of the exam for which to get results
+    :param exam: id of the exam for which to get results
     :return: dictionary with results
     :rtype: dict
     """
-    page = requests.get(URL, {'id': exam_id.value})
+    page = requests.get(URL, {'id': exam.value})
     if page.status_code != 200:
-        raise RuntimeError(f'The requested URL could not be found: {URL}?id={exam_id.value}')
+        raise RuntimeError(f'The requested URL could not be found: {URL}?id={exam.value}')
 
     # Get table element
     soup = BeautifulSoup(page.content, 'html.parser')

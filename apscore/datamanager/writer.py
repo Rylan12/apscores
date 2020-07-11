@@ -65,6 +65,18 @@ def write_all_data_to_json_directory(data: dict, directory: str) -> None:
         write_data_to_json_file(data[exam], filepath)
 
 
+def write_exam_list(data: dict, filename: str) -> None:
+    """Write a list of exam names to a json file
+
+    :param data: a dictionary containing data for all exams
+    :param filename: the file to write the list of exams to
+    :rtype: None
+    """
+    exams = [e.name for e in data.keys()]
+    with open(filename, 'w') as f:
+        json.dump(exams, f)
+
+
 def write_all_data_to_directory(data: dict, directory: str) -> None:
     """Write data for all exams in both csv and json formats to subdirectories in a given directory
 
@@ -72,5 +84,6 @@ def write_all_data_to_directory(data: dict, directory: str) -> None:
     :param directory: the directory to write the files to
     :rtype: None
     """
+    write_exam_list(data, os.path.join(directory, 'exams.json'))
     write_all_data_to_csv_directory(data, os.path.join(directory, 'csv'))
     write_all_data_to_json_directory(data, os.path.join(directory, 'json'))
