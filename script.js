@@ -1,6 +1,7 @@
-let chart
-let selectedExam = 'Choose Exam'
-let chartType = 'line'
+let chart;
+let selectedExam = 'Choose Exam';
+let chartType = 'line';
+let showMajorRevisions = false;
 
 function getExamName(exam) {
     return exam
@@ -8,16 +9,17 @@ function getExamName(exam) {
         .replaceAll(/ (\w{2})(?: |$)/ig, (word) => ` ${word.toUpperCase()} `);
 }
 
-function renderChart(exam, chartType) {
+function renderChart() {
     if (chart) {
-        chart.destroy()
+        chart.destroy();
     }
-    if (exam === 'Choose Exam') {
-        return
+    if (selectedExam === 'Choose Exam') {
+        return;
     }
-    fetch(`data/json/${exam}.json`).then(response => response.json()).then(data => {
-        let type
-        let years = [];
+    fetch(`data/json/${selectedExam}.json`).then(response => response.json()).then(data => {
+        let type;
+        let years;
+        let colors = [];
         let datasets = [
             {
                 label: 1,
@@ -59,30 +61,45 @@ function renderChart(exam, chartType) {
         let options = {
             title: {
                 display: true,
-                text: `${getExamName(exam)} Exam Score Distribution`
+                text: `${getExamName(selectedExam)} Exam Score Distribution`
+            },
+            tooltips: {
+                callbacks: {
+                    label: (tooltipItem, data) => {
+                        let label = data.datasets[tooltipItem.datasetIndex].label || '';
+                        label = label ? `${label}: ` : ''
+                        return `${label}${tooltipItem.yLabel}%`
+                    }
+                }
             }
         };
 
         // Populate years as labels
-        years = Object.keys(data.data)
+        years = Object.keys(data.data);
 
         // Populate datasets
         years.forEach(year => {
             for (let i = 0; i <= 5; i++) {
-                datasets[i].data.push(data.data[year][i]);
+                datasets[i].data.push(Math.round(data.data[year][i] * 1000) / 10);
             }
+            colors.push(data['major_revisions'].includes(parseInt(year)) ? '#00000080' : '#00000019');
         });
+
+        let yAxisTicks = {
+            beginAtZero: true,
+            callback: (value) => {
+                return value + '%';
+            }
+        };
+        let xAxisGridLines = showMajorRevisions ? {drawBorder: false, color: colors} : {};
 
         // Populate chart type and options
         switch (chartType) {
             case 'line':
                 type = 'line';
                 options.scales = {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true
-                        },
-                    }]
+                    yAxes: [{ticks: yAxisTicks}],
+                    xAxes: [{gridLines: xAxisGridLines}]
                 };
                 for (let i = 0; i < 5; i++) {
                     datasets[i].fill = false;
@@ -91,28 +108,30 @@ function renderChart(exam, chartType) {
                 break;
             case 'stacked-line':
                 type = 'line';
+                yAxisTicks.max = 100;
                 options.scales = {
-                    xAxes: [{stacked: true}],
-                    yAxes: [{stacked: true}]
+                    xAxes: [{stacked: true, gridLines: xAxisGridLines}],
+                    yAxes: [{stacked: true, ticks: yAxisTicks}]
                 };
                 datasets.pop();
-                datasets[0].fill = true
+                datasets[0].fill = true;
                 for (let i = 1; i < 5; i++) {
                     datasets[i].fill = '-1';
                 }
                 break;
             case 'stacked-bar':
                 type = 'bar';
+                yAxisTicks.max = 100;
                 options.scales = {
-                    xAxes: [{stacked: true}],
-                    yAxes: [{stacked: true}]
+                    xAxes: [{stacked: true, gridLines: xAxisGridLines}],
+                    yAxes: [{stacked: true, ticks: yAxisTicks}]
                 };
                 for (let i = 0; i < 5; i++) {
                     datasets[i].borderWidth = 3;
                 }
                 datasets[5].label = 'Failure Percentage';
                 datasets[5].type = 'line';
-                datasets[5].data = datasets[5].data.map(x => 1 - x);
+                datasets[5].data = datasets[5].data.map(x => 100 - x);
                 break;
         }
 
@@ -140,13 +159,18 @@ window.addEventListener('load', () => {
         });
     });
 
-    document.querySelector('#examSelector').onchange = function () {
+    document.querySelector('#examSelector').addEventListener('change', function() {
         selectedExam = this.options[this.selectedIndex].value;
-        renderChart(selectedExam, chartType);
-    };
+        renderChart();
+    });
 
-    document.querySelector('#chartTypeSelector').onchange = function () {
+    document.querySelector('#chartTypeSelector').addEventListener('change', function() {
         chartType = this.options[this.selectedIndex].value;
-        renderChart(selectedExam, chartType);
-    };
+        renderChart();
+    });
+
+    document.querySelector('#majorRevisionCheckbox').addEventListener('click', function() {
+        showMajorRevisions = this.checked;
+        renderChart();
+    });
 });
