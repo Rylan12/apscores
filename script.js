@@ -1,7 +1,6 @@
 let chart;
 let selectedExam = 'Choose Exam';
 let chartType = 'line';
-let showMajorRevisions = false;
 
 function getExamName(exam) {
     return exam
@@ -87,11 +86,10 @@ function renderChart() {
 
         let yAxisTicks = {
             beginAtZero: true,
-            callback: (value) => {
-                return value + '%';
-            }
+            callback: (value) => value + '%'
         };
-        let xAxisGridLines = showMajorRevisions ? {drawBorder: false, color: colors} : {};
+
+        let xAxisGridLines = {drawBorder: false, color: colors};
 
         // Populate chart type and options
         switch (chartType) {
@@ -137,12 +135,12 @@ function renderChart() {
 
         let ctx = document.getElementById('chart').getContext('2d');
         chart = new Chart(ctx, {
-            type: type,
+            type,
             data: {
                 labels: years,
-                datasets: datasets
+                datasets,
             },
-            options: options
+            options
         });
     });
 }
@@ -159,18 +157,13 @@ window.addEventListener('load', () => {
         });
     });
 
-    document.querySelector('#examSelector').addEventListener('change', function() {
+    document.querySelector('#examSelector').addEventListener('change', function () {
         selectedExam = this.options[this.selectedIndex].value;
         renderChart();
     });
 
-    document.querySelector('#chartTypeSelector').addEventListener('change', function() {
+    document.querySelector('#chartTypeSelector').addEventListener('change', function () {
         chartType = this.options[this.selectedIndex].value;
-        renderChart();
-    });
-
-    document.querySelector('#majorRevisionCheckbox').addEventListener('click', function() {
-        showMajorRevisions = this.checked;
         renderChart();
     });
 });
